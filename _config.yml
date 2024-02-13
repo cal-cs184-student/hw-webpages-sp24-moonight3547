@@ -1,16 +1,1 @@
 theme: jekyll-theme-cayman
-window.MathJax = {
-  tex: {
-    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-    displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-  },
-  options: {
-    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre','code', 'a', 'annotation', 'annotation-xml'],
-    ignoreHtmlClass: 'tex2jax_ignore|crayon-.*', // 'crayon-' 开头的类，属于Wordpress代码高亮库，这部分不需要处理，否则会导致显示不正确,这部分是正则式，多条之间用'|'分割
-    processHtmlClass: 'tex2jax_process'
-  },
-  //禁用右键菜单	
-  renderActions: {
-    addMenu: [0, '', '']
-  }
-};
