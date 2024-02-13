@@ -1,13 +1,15 @@
 <html>
 	<head>
-	<script type="text/javascript" async
-		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async>
-	</script>
+		<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 	</head>
 	<body>
 		<h1>CS 184 Homework 1 Write-Up</h1>
 		<h2>Overview</h2>
-		In this assignment, we first learned how to rasterize a single-color triangle without oversampling. Then, we learned the oversampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.  
+		<div>
+		In this assignment, we first learned how to rasterize a single-color triangle without oversampling. Then, we learned the oversampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.
+		We also implement the extra credit for Task 1, optimizing the efficiency to rasterize a triangle using segment intersections instead of point-in-triangle tests. 
+		</div>
+		
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
 		<h3>Algorithm Description:</h3> 
 		<div>First, we can find out the bounding box of the triangle by find the minimum/maximum x,y values of the three given points of the triangle. Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+0.5,y+0.5)$ is inside the triangle. If the sample point is inside the triangle, we fill the pixel with the given color of the triangle. 
