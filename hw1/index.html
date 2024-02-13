@@ -6,14 +6,15 @@
 	</head>
 	<body>
 		<h1>CS 184 Homework 1 Write-Up</h1>
+		<h2>Overview</h2>
+		In this assignment, we first learned how to rasterize a single-color triangle without oversampling. Then, we learned the oversampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.  
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		<h3>Method Description:</h3> 
-		<p>First, we can find out the bounding box of the triangle by find the minimum/maximum x,y values of the three given points of the triangle. Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+0.5,y+0.5)$ is inside the triangle. If the sample point is inside the triangle, we fill the pixel with the given color of the triangle. 
-		</p>
-		$i=\frac{A}{(t+b)^n}$
+		<h3>Algorithm Description:</h3> 
+		<div>First, we can find out the bounding box of the triangle by find the minimum/maximum x,y values of the three given points of the triangle. Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+0.5,y+0.5)$ is inside the triangle. If the sample point is inside the triangle, we fill the pixel with the given color of the triangle. 
+		</div>
+		<h3>Algorithm Effciency</h3>
+		<div> Since we first find out the bounding box inside the viewplot. </div>
 		<h2>Task 2: Antialiasing by Supersampling</h2>
-		<p> </p>
-		
 		<h2>Task 3: Transforms</h2>
 		<h2>Task 4: Barycentric coordinates</h2>
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
