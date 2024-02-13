@@ -1,13 +1,25 @@
 <html>
 	<head>
-		<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async </script>
 	</head>
 	<body>
 		<h1>CS 184 Homework 1 Write-Up</h1>
 		<h2>Overview</h2>
+		<h3>Implementation Overview</h3>
 		<div>
 		In this assignment, we first learned how to rasterize a single-color triangle without oversampling. Then, we learned the oversampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.
 		We also implement the extra credit for Task 1, optimizing the efficiency to rasterize a triangle using segment intersections instead of point-in-triangle tests. 
+		</div>
+		<h3>Framework Overview</h3>
+		<div>
+		As a whole, we've built the rasterization part in this assignment. 
+		In the framework, the DrawRend renderer will redraw the GUI window at a frequency or after some key input. 
+		When redrawing, the renderer will invoke the methods we implemented to rasterize all the points, lines, and triangles (triangulation is given in the framework). 
+		</div>
+		<h3>My Thoughts</h3>
+		<div>
+		I learned many interesting things when completing the assignment. I learned a framework to transform SVG objects into NDC and NDC into screen-space. In the framework, I implemented the details of rasterization using oversampling for antialiasing, bilinear interpolation and nearest method for texture sampling, mipmaping for level sampling. 
+		The assignment not only help me review these concepts but also give me an opportunity to understand how they work actually. Besides, I also gain experience in solving detailed problems like how to deal with the boundary of triangles and data out of range. Extra credits are greatly designed but I only solve that of Task 1 due to the time issue. 
+		But the efficiency improvement in triangle rasterization also help me practice a lot in algorithm designs and programming. 
 		</div>
 		
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
