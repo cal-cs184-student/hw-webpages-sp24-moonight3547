@@ -37,8 +37,7 @@
 <h2 align="middle">Overview</h2>
 <h3>Implementation Overview</h3>
 <p>
-In this assignment, we first learned how to rasterize a single-color triangle without supersampling. Then, we learned the supersampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.
-We also implement the extra credit for Task 1, optimizing the efficiency to rasterize a triangle using segment intersections instead of point-in-triangle tests. 
+In this assignment, we first learned how to rasterize a single-color triangle without supersampling. Then, we learned the supersampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method. I also implement the extra credit for Task 1 and Task 3, optimizing the efficiency to rasterize a triangle using segment intersections instead of point-in-triangle tests. 
 </p>
 <h3>Framework Overview</h3>
 <p>
@@ -191,6 +190,12 @@ The cubeman is now running towards right and waving his two hands to keep balanc
 <div align="middle">
 	<img src="hw1-task3myrobotrun.png" align="middle" width="400" />
 	<figcaption align="middle">docs/my_robot.svg a running run waving his hands</figcaption>
+</div>
+<h4 align="middle">Extra Credit</h4>
+<p>I implement another two keys E and R. Key R is used to rotate the viewplot clockwise by 10 degrees and key E is used to rotate the viewplot counter-clockwise by 10 degrees. The screenshot below displays how the two keys rotate the bounding box and the cube inside the viewplot. </p>
+<div align="middle">
+	<img src="hw1-task3extra.png" align="middle" width="400" />
+	<figcaption align="middle">svg/basic/test5.svg displaying the viewplot rotated by the two keys E and R</figcaption>
 </div>
 
 <h2 align="middle">Section II: Sampling</h2>
