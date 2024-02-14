@@ -186,9 +186,11 @@ The cubeman is now running towards right and waving his two hands to keep balanc
 <h2 align="middle">Section II: Sampling</h2>
 
 <h3 align="middle">Part 4: Barycentric coordinates</h3>
-Barycentric coordinates is a system of coordinates used for easily interpolating in any points of a triangle. By using the Barycentric coordinates we are able to easily see the proximity to each triangle's vertices and have the correct ratios between them. This allows us to have smooth transitions between colors or textures within a triangle which will contribute to antialiasing as well and makes it easier to sample points.
-
-In this example, with a triangle on the right side, we have a triangle with corners of red, blue, and green. The intermediate colors between them are created from the combination of relative proximities to each of the vertices. We can see that the middle of the triangle blends all of the colors together while the corners have the pure colors.
+<p>Barycentric coordinates is a system of coordinates used for easily interpolating in any points of a triangle. By using the Barycentric coordinates we are able to easily see the proximity to each triangle's vertices and have the correct ratios between them. This allows us to have smooth transitions between colors or textures within a triangle which will contribute to antialiasing as well and makes it easier to sample points.
+</p>
+<p>
+We give another example of color gradients in regular triangle shape. In this example, we have a regular triangle with three pointers of red, green, and blue. The color of the intermediate pixels inside the regular triangle are interpolated from these three points as a combination with different coefficients of these three colors. The coefficients depends on the distance away from each point. The farther the pixel is away from the red point, the less the color is red. The center of the regular triangle blends all the three colors. Red and green are blended into yellow, while red and blue are blended into purple. 
+</p>
 <h4 align="middle">Screenshot</h4>
 <div align="middle">
   <table style="width=100%">
