@@ -54,12 +54,12 @@ But the efficiency improvement in triangle rasterization also help me practice a
 <h2 align="middle">Section I: Rasterization</h2>
 
 <h3 align="middle">Part 1: Rasterizing single-color triangles</h3>
-<h4 align="middle">Algorithm Description:</h4> 
+<h4 align="middle">Algorithm Description</h4> 
 <p>First, we can find out the bounding box of the triangle by find the minimum/maximum x,y values of the three given points of the triangle. 
 Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+0.5,y+0.5)$ is inside the triangle. If the sample point is inside the triangle, we fill the pixel with the given color of the triangle. 
 </p>
 <h4 align="middle">Algorithm Effciency</h4>
-<p> Since we first find out the bounding box inside the viewplot. We 
+<p> Since we first find out the bounding box inside the viewplot. We only check those pixels in the bounding box whether the sample point of the pixel is inside the triangle in $O(1)$ time (constant time). Notice that the constant runtime of point-in-triangle test is large since it takes three line test and each includes a lot of calculation. 
 </p>
 <h4 align="middle">Screenshot</h4>
 <img src="hw1-task1test4.png" width="400" height="400" />
