@@ -192,11 +192,14 @@ The cubeman is now running towards right and waving his two hands to keep balanc
 <h2 align="middle">Section II: Sampling</h2>
 
 <h3 align="middle">Part 4: Barycentric coordinates</h3>
-<p>Barycentric coordinates is a system of coordinates used for easily interpolating in any points of a triangle. By using the Barycentric coordinates we are able to easily see the proximity to each triangle's vertices and have the correct ratios between them. This allows us to have smooth transitions between colors or textures within a triangle which will contribute to antialiasing as well and makes it easier to sample points.
+<h4 align="middle">Barycentric Coordinates Explanation</h4>
+<p>Barycentric coordinates is a system of coordinates to linearly interpolate some value at any points inside a given triangle with given values at the three vertices. The value at each point is a linear combination of the values at the three vertices with the distance from the three edges as the coefficients. Barycentric coordinates help us to construct a smooth function of values inside the triangle area which can help us fill the the area with smooth colors or textures. 
+</p>
+<h4 align="middle">Triangle Example</h4>
+<p>In the right example, we have a smoothly blended color regular triangle with three vertices of red, green, and blue. The color of the intermediate pixels inside the regular triangle are interpolated from these three vertices as a combination with different coefficients of these three colors. The coefficients depends on the distance away from each vertex. The farther the pixel is away from the red vertex, the less the color is red. The center of the regular triangle blends all the three colors. Red and green are blended into yellow, while red and blue are blended into purple. 
 </p>
 <h4 align="middle">Screenshot</h4>
-<p>
-We give another example of color gradients in regular triangle shape. In this example, we have a regular triangle with three pointers of red, green, and blue. The color of the intermediate pixels inside the regular triangle are interpolated from these three points as a combination with different coefficients of these three colors. The coefficients depends on the distance away from each point. The farther the pixel is away from the red point, the less the color is red. The center of the regular triangle blends all the three colors. Red and green are blended into yellow, while red and blue are blended into purple. 
+<p>On the left below, we have a png screenshot of svg/basic/test7.svg with color gradients with default viewing parameters and sample rate 1. 
 </p>
 <div align="middle">
   <table style="width=100%">
@@ -212,6 +215,9 @@ We give another example of color gradients in regular triangle shape. In this ex
     </tr>
   </table>
 </div>
+<p>
+On the right-hand side, we give another example of color gradients in regular triangle shape. 
+</p>
 
 <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
 
