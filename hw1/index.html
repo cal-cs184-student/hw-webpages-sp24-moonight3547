@@ -54,22 +54,21 @@ But the efficiency improvement in triangle rasterization also help me practice a
 <h2 align="middle">Section I: Rasterization</h2>
 
 <h3 align="middle">Part 1: Rasterizing single-color triangles</h3>
-		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		<h3>Algorithm Description:</h3> 
-		<p>First, we can find out the bounding box of the triangle by find the minimum/maximum x,y values of the three given points of the triangle. 
-		Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+0.5,y+0.5)$ is inside the triangle. If the sample point is inside the triangle, we fill the pixel with the given color of the triangle. 
-		</p>
-		<h3>Algorithm Effciency</h3>
-		<p> Since we first find out the bounding box inside the viewplot. We 
-		</p>
-		<h3>Screenshot</h3>
-		<img src="hw1-task1test4.png" width="400" height="400" />
-		<h3>Extra Credit</h3>
-		We can use chrono::high_resolution_clock::now() to record the start time and end time of the redraw() function of DrawRend class. The optimization is much more obvious for 
-		<img src="hw1-task2test4sr1.png" width="400" height="400" />
-		<img src="hw1-task2test4sr4.png" width="400" height="400" />
-		<img src="hw1-task2test4sr16.png" width="400" height="400" />
-		<img src="hw1-task3myrobotrun.png" width="400" height="400" />
+<h4>Algorithm Description:</h4> 
+<p>First, we can find out the bounding box of the triangle by find the minimum/maximum x,y values of the three given points of the triangle. 
+Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+0.5,y+0.5)$ is inside the triangle. If the sample point is inside the triangle, we fill the pixel with the given color of the triangle. 
+</p>
+<h4>Algorithm Effciency</h4>
+<p> Since we first find out the bounding box inside the viewplot. We 
+</p>
+<h4>Screenshot</h4>
+<img src="hw1-task1test4.png" width="400" height="400" />
+<h4>Extra Credit</h4>
+We can use chrono::high_resolution_clock::now() to record the start time and end time of the redraw() function of DrawRend class. The optimization is much more obvious for 
+		<img src="hw1-task2test4sr1.png" width="400" />
+		<img src="hw1-task2test4sr4.png" width="400" />
+		<img src="hw1-task2test4sr16.png" width="400" />
+		<img src="hw1-task3myrobotrun.png" width="400" />
 
 <p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
 
