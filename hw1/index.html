@@ -25,14 +25,31 @@
 
 <h1 align="middle">CS 184/284A: Computer Graphics and Imaging, Spring 2024</h1>
 <h1 align="middle">Homework 1: Rasterizer</h1>
-<h2 align="middle">YOUR NAME</h2>
+<h2 align="middle">Author: Yuan Xu, SID: 3039823660, Collaborators: None</h2>
+<a href="https://cal-cs184-student.github.io/hw-webpages-sp24-moonight3547/hw1/index.html">Visit My Website!</a>
 
 <br><br>
 
 <div>
 
 <h2 align="middle">Overview</h2>
-<p>Give a high-level overview of what you implemented in this homework Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.</p>
+<h3>Implementation Overview</h3>
+<p>
+In this assignment, we first learned how to rasterize a single-color triangle without oversampling. Then, we learned the oversampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.
+We also implement the extra credit for Task 1, optimizing the efficiency to rasterize a triangle using segment intersections instead of point-in-triangle tests. 
+</p>
+<h3>Framework Overview</h3>
+<p>
+As a whole, we've built the rasterization part in this assignment. 
+In the framework, the DrawRend renderer will redraw the GUI window at a frequency or after some key input. 
+When redrawing, the renderer will invoke the methods we implemented to rasterize all the points, lines, and triangles (triangulation is given in the framework). 
+</p>
+<h3>My Thoughts</h3>
+<p>
+I learned many interesting things when completing the assignment. I learned a framework to transform SVG objects into NDC and NDC into screen-space. In the framework, I implemented the details of rasterization using oversampling for antialiasing, bilinear interpolation and nearest method for texture sampling, mipmaping for level sampling. 
+The assignment not only help me review these concepts but also give me an opportunity to understand how they work actually. Besides, I also gain experience in solving detailed problems like how to deal with the boundary of triangles and data out of range. Extra credits are greatly designed but I only solve that of Task 1 due to the time issue. 
+But the efficiency improvement in triangle rasterization also help me practice a lot in algorithm designs and programming. 
+</p>
 
 <h2 align="middle">Section I: Rasterization</h2>
 
@@ -92,28 +109,6 @@
 
 <h3 align="middle">Part 7: Draw something interesting!</h3>
 
-		<h1>CS 184 Homework 1 Write-Up</h1>
-		<p> Author: Yuan Xu, SID: 3039823660, Collaborators: None</p>
-		<a href="https://cal-cs184-student.github.io/hw-webpages-sp24-moonight3547/hw1/index.html">Visit My Website!</a>
-		<h2>Overview</h2>
-		<h3>Implementation Overview</h3>
-		<p>
-		In this assignment, we first learned how to rasterize a single-color triangle without oversampling. Then, we learned the oversampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.
-		We also implement the extra credit for Task 1, optimizing the efficiency to rasterize a triangle using segment intersections instead of point-in-triangle tests. 
-		</p>
-		<h3>Framework Overview</h3>
-		<p>
-		As a whole, we've built the rasterization part in this assignment. 
-		In the framework, the DrawRend renderer will redraw the GUI window at a frequency or after some key input. 
-		When redrawing, the renderer will invoke the methods we implemented to rasterize all the points, lines, and triangles (triangulation is given in the framework). 
-		</p>
-		<h3>My Thoughts</h3>
-		<p>
-		I learned many interesting things when completing the assignment. I learned a framework to transform SVG objects into NDC and NDC into screen-space. In the framework, I implemented the details of rasterization using oversampling for antialiasing, bilinear interpolation and nearest method for texture sampling, mipmaping for level sampling. 
-		The assignment not only help me review these concepts but also give me an opportunity to understand how they work actually. Besides, I also gain experience in solving detailed problems like how to deal with the boundary of triangles and data out of range. Extra credits are greatly designed but I only solve that of Task 1 due to the time issue. 
-		But the efficiency improvement in triangle rasterization also help me practice a lot in algorithm designs and programming. 
-		</p>
-		
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
 		<h3>Algorithm Description:</h3> 
 		<p>First, we can find out the bounding box of the triangle by find the minimum/maximum x,y values of the three given points of the triangle. 
