@@ -37,7 +37,7 @@
 <h2 align="middle">Overview</h2>
 <h3>Implementation Overview</h3>
 <p>
-In this assignment, we first learned how to rasterize a single-color triangle without oversampling. Then, we learned the oversampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.
+In this assignment, we first learned how to rasterize a single-color triangle without supersampling. Then, we learned the supersampled triangle rasterization and implementation of translate/scale/rotate transform. After that, we rasterize multi-color triangles with barycentric interpolation, and rasterize textured triangles with texture filtering and level sampling. Two basic methods are linear interpolation and nearest method.
 We also implement the extra credit for Task 1, optimizing the efficiency to rasterize a triangle using segment intersections instead of point-in-triangle tests. 
 </p>
 <h3>Framework Overview</h3>
@@ -48,7 +48,7 @@ When redrawing, the renderer will invoke the methods we implemented to rasterize
 </p>
 <h3>My Thoughts</h3>
 <p>
-I learned many interesting things when completing the assignment. I learned a framework to transform SVG objects into NDC and NDC into screen-space. In the framework, I implemented the details of rasterization using oversampling for antialiasing, bilinear interpolation and nearest method for texture sampling, mipmaping for level sampling. 
+I learned many interesting things when completing the assignment. I learned a framework to transform SVG objects into NDC and NDC into screen-space. In the framework, I implemented the details of rasterization using supersampling for antialiasing, bilinear interpolation and nearest method for texture sampling, mipmaping for level sampling. 
 The assignment not only help me review these concepts but also give me an opportunity to understand how they work actually. Besides, I also gain experience in solving detailed problems like how to deal with the boundary of triangles and data out of range. Extra credits are greatly designed but I only solve that of Task 1 due to the time issue. 
 But the efficiency improvement in triangle rasterization also help me practice a lot in algorithm designs and programming. 
 </p>
@@ -64,28 +64,28 @@ Then, check each pixel (x,y) in the bounding box whether the sample point (x+0.5
 <p> Since we first find out the bounding box inside the viewplot. We only check those pixels in the bounding box whether the sample point of the pixel is inside the triangle in O(1) time (constant time). Notice that the constant runtime of point-in-triangle test is large since it takes three line test and each includes a lot of calculation. Although this method takes a lot of time when the number of triangles is very large (e.g. svg/basic/test3.svg), the algorithm is no worse than one that checks each sample within the bounding box of the triangle since we ignore the part of triangle that outside the frame. 
 </p>
 <h4 align="middle">Screenshot</h4>
-<p>We can find the screenshot of drawing svg/basic/test4.svg without oversampling below. </p>
+<p>We can find the screenshot of drawing svg/basic/test4.svg without supersampling below. </p>
 <div align="middle">
   <table style="width=100%">
     <tr>
       <td>
 	<img src="hw1-task1test3.png" align="middle" width="400" />
-	<figcaption align="middle">basic/test3.svg without oversampling</figcaption>
+	<figcaption align="middle">basic/test3.svg without supersampling</figcaption>
       </td>
       <td>
 	<img src="hw1-task1test4.png" align="middle" width="400" />
-	<figcaption align="middle">basic/test4.svg without oversampling</figcaption>
+	<figcaption align="middle">basic/test4.svg without supersampling</figcaption>
       </td>
     </tr>
     <br>
     <tr>
       <td>
 	<img src="hw1-task1test5.png" align="middle" width="400" />
-	<figcaption align="middle">basic/test5.svg without oversampling</figcaption>
+	<figcaption align="middle">basic/test5.svg without supersampling</figcaption>
       </td>
       <td>
 	<img src="hw1-task1test6.png" align="middle" width="400" />
-	<figcaption align="middle">basic/test6.svg without oversampling</figcaption>
+	<figcaption align="middle">basic/test6.svg without supersampling</figcaption>
       </td>
     </tr>
   </table>
@@ -139,15 +139,20 @@ Then, check each pixel (x,y) in the bounding box whether the sample point (x+0.5
 
 <h3 align="middle">Part 2: Antialiasing triangles</h3>
 <h4 align="middle">Algorithm Description</h4>
+In supersampling, we divide each pixel into smaller grids and select the centers of each grid as a sample point. The number of the grids is the sample rate. We take the mean value of the color value of the multiple sample points as the final image color at each pixel. This help us to reduce the large frequency changes in the corresponding frequency space of the image and reduce the jaggies. 
 
 <h4 align="middle">Implementation Explanation</h4>
+We implement supersampling by adding two loops within the iteration of each pixel to iterate all the sample points of the pixel. We also need to enlarge the size of sample buffer to be sample rate times the frame buffer size since the number of sample points for each pixel is the constant sample rate. We now check each sample point whether it is inside the triangle or not and fill the corresponding sample of the pixel with the color if the sample point is inside the triangle. In the end, we use resolve_to_framebuffer method to tranfer the sample_buffer into the final image by averaging all its sample points' color to get the color of a pixel. 
+
 <h4 align="middle">Screenshot</h4>
+<p>Below are the screenshots of images with sample rate from 1 to 16. The results of supersampling with larger sample rate is more smooth. The colors on the edge are gradually changing to reduce the jaggies and improve anti-aliasing power. It also reduce the high frequency changes in the frequency space of the image. 
+</p>
 <div align="middle">
   <table style="width=100%">
     <tr>
       <td>
 				<img src="hw1-task2test4osr1.png" align="middle" width="400" />
-        <figcaption align="middle">basic/test4.svg without oversampling</figcaption>
+        <figcaption align="middle">basic/test4.svg without supersampling</figcaption>
       </td>
       <td>
 				<img src="hw1-task2test4osr1.png" align="middle" width="400" />
@@ -225,7 +230,7 @@ On the right-hand side, we give another example of color gradients in regular tr
 <p>The ideal point is estimated (interpolated) by barycentric coordinates. For nearest sampling, we select the color of the pixel in the texture image which is the nearest from the ideal point. For bilinear sampling method, we find the nearest four sampling point (u,v), (u,v+1), (u+1,v), (u+1,v+1) and use their color value to linearly interpolate the color value of the ideal point. The linear interpolation in bilinear sampling uses the lerp() function to find the interpolated value as a linear combination of the values of two closest integer points. 
 </p>
 <h4 align="middle">Two Methods Discussion</h4>
-From the screenshots below, we can find that bilinear pixel sampling gives us more smoothly textured images. The image of nearest pixel sampling with sample rate 1 is pixelated and not smooth with many jaggies. The image of bilinear pixel sampling with sample rate 1 is much more smooth than the image of nearest pixel sampling with sample rate 1. Nearest pixel sampling with oversampling of sample rate 16 can also help make the image more smooth and reduce the jaggies and aliasing. Bilinear sampling with sample rate 16 is also smooth but a little blurred. Difference between the two pixel sampling methods: nearest pixel sampling can provides a clear but jaggy result since it only select the nearest pixel, while bilinear pixel sampling provides a smooth but a little blurred since it combines multiple surrounding pixels. 
+From the screenshots below, we can find that bilinear pixel sampling gives us more smoothly textured images. The image of nearest pixel sampling with sample rate 1 is pixelated and not smooth with many jaggies. The image of bilinear pixel sampling with sample rate 1 is much more smooth than the image of nearest pixel sampling with sample rate 1. Nearest pixel sampling with supersampling of sample rate 16 can also help make the image more smooth and reduce the jaggies and aliasing. Bilinear sampling with sample rate 16 is also smooth but a little blurred. Difference between the two pixel sampling methods: nearest pixel sampling can provides a clear but jaggy result since it only select the nearest pixel, while bilinear pixel sampling provides a smooth but a little blurred since it combines multiple surrounding pixels. 
 <h4 align="middle">Screenshot</h4>
 <div align="middle">
   <table style="width=100%">
@@ -256,20 +261,18 @@ From the screenshots below, we can find that bilinear pixel sampling gives us mo
 
 <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
 <h4 align="middle">Level Sampling Explanation & Implementation</h4>
-Level sampling is the process to find the appropriate mipmap level to use in texture sampling. We have three methods to select the level for sampling: level zero, nearest sampling, linear sampling. Level zero sampling is the easiest. We implement this 
-	Level Sampling is the process of finding the right mipmap level to use for the corresponding image. We do this by taking the derivative of 1 pixel with respect to dx and dy, then using Barycentric coordinates to convert it into the uv space. This allows us to see how stretched out or compressed our image is and will allow us to determine which mipmap level the image should be at. We implemented mipmap level zero, nearest level sampling, and bilinear level. The mipmap level zeros uses only the level zero mipmap with the highest resolution. The nearest level sampling will calculate the max derivative and take the log base 2 then round to the nearest mipmap level. The bilinear level will interpolate between the two closes mipmap levels, taking the floor and ceiling of the level value, finding the texture color for both levels, then linearly interpolating between the two colors.
-Pixel sampling is able to run relatively quickly to the original algorithm since it will just be finding the point directly from the texture map, however bilinear pixel sampling may take up more time since we will need to do 3 lerp functions, pixel sampling will be the worst at antialiasing power because it applies the pixel sampling over the entire image and can make the entire image crisp or blurry. Level sampling employs the use of mipmaps which are images but at multiple resolutions and uses the image to figure out the best mipmap level to use that will create the clearest image. This takes up more memory usage because we need to store the additional mipmaps however it performs well at antialiasing because it can change blurriness or reduce high frequencies at different areas. The runtime also takes a bit longer since we need to compute barycentric coordinates for different mipmap levels, however performs well at creating an image that is antialised. Changing the number of pixels allows us to create more subsamples per pixel and sample the image more. This works well at reducing high frequncy changes int eh image and thus works well for antialiasing, however it had a large impace on runtime in that each subsample must be sampled. The memory impact will depend on the number of subsamples since the memory storage for pixel colors will be multiplied by the number of subsamples.
+Level sampling is the process to find the appropriate mipmap level to use in texture sampling. We have three methods to select the level for sampling: level zero, nearest sampling, linear sampling. Level zero sampling is the easiest. Level zero sampling just sample each pixels in the mipmap of level 0 with the highest resolution. We implement this part by first estimating the level with Texture::get_level() function and then sampling the pixel with Texture::sample() function. To get the appropriate level, we take the derivative of u and v with respect to x and y with increment 1's. Here, we use Barycentric coordinates to get the corresponding value in uv space. The gradients help us see how the space stretched or compressed from screen-space to texture space. The norm of the gradient help us determine the mipmap level we need by taking the log base 2 to the norm of gradient. The nearest level sampling will round the idea level to the nearest mipmap level. The linear level sampling will interpolate between the two closest mipmap levels (with sample rate equal to a power of two), i.e. take the floor and ceiling value of the ideal level. Linear level sampling will calculate the pixel sampling result in these two levels and linearly interpolate the color value at the ideal level. 
 
 <h4 align="middle">Tradeoff</h4>
 <p>Consider the tradeoffs between pixel sampling, level sampling, and the number of samples per pixel in terms of speed, memory usage, and anti-aliasing power. 
 </p>
-<p>Speed: Nearest pixel sampling can be relatively faster compared to bilinear sampling and other techniques since it samples each pixel individually without considering neighboring pixels. But bilinear sampling may take more time compared to linear level sampling since bilinear sampling use four sample points while linear level sampling only use two. Involving sampling pixels at different levels, level sampling generally takes more time compared with pixel sampling. Oversampling with multiple samples per pixel must be slowest since it requires at least $4$ sample points and sometimes needs about $16$ sample points to have good performance. 
+<p>Speed: Nearest pixel sampling can be relatively faster compared to bilinear sampling and other techniques since it samples each pixel individually without considering neighboring pixels. But bilinear sampling may take more time compared to linear level sampling since bilinear sampling use four sample points while linear level sampling only use two. Involving sampling pixels at different levels, level sampling generally takes more time compared with pixel sampling. Supersampling with multiple samples per pixel must be slowest since it requires at least $4$ sample points and sometimes needs about $16$ sample points to have good performance. 
 </p>
-<p>Memory usage: Pixel sampling use the the least memory since it only needs to store information about each pixel being sampled. Level sampling use more memory space since it need to store information at multiple levels of mipmapping. Oversampling at high sample counts takes the largest memory space since it need to store all the sample results for each pixel. The memory usage is linearly increasing with the number of samples per pixel. 
+<p>Memory usage: Pixel sampling use the the least memory since it only needs to store information about each pixel being sampled. Level sampling use more memory space since it need to store information at multiple levels of mipmapping. Supersampling at high sample counts takes the largest memory space since it need to store all the sample results for each pixel. The memory usage is linearly increasing with the number of samples per pixel. 
 </p>
-<p>Anti-aliasing Power: Pixel sampling may not provide strong anti-aliasing effect, especially nearest pixel sampling. Nearest pixel sampling gives pixelated and jaggy results and has no anti-aliasing power. Bilinear pixel sampling provides a more smooth result and help anti-aliasing. Considering neighbor pixels at different levels, level sampling can provide better anti-aliasing effects compared with pixel sampling. Oversampling with multiple samples per pixel can greatly improves anti-aliasing by reducing noise and aliasing artifacts. 
+<p>Anti-aliasing Power: Pixel sampling may not provide strong anti-aliasing effect, especially nearest pixel sampling. Nearest pixel sampling gives pixelated and jaggy results and has no anti-aliasing power. Bilinear pixel sampling provides a more smooth result and help anti-aliasing. Considering neighbor pixels at different levels, level sampling can provide better anti-aliasing effects compared with pixel sampling. Supersampling with multiple samples per pixel can greatly improves anti-aliasing by reducing noise and aliasing artifacts. 
 </p>
-<p>In summary, the choice of sampling technique depends on the specific requirements of the rendering/rasterization/texturing task, including factors like speed, memory usage and anti-aliasing power. Pixel sampling has fast speed and small memory usage but is not that good at anti-aliasing. Level sampling provides a moderate choice between the balance of speed, memory and anti-aliasing power. Oversampling with multiple samples per pixel can greatly improve anti-aliasing power but takes much more time and memory. 
+<p>In summary, the choice of sampling technique depends on the specific requirements of the rendering/rasterization/texturing task, including factors like speed, memory usage and anti-aliasing power. Pixel sampling has fast speed and small memory usage but is not that good at anti-aliasing. Level sampling provides a moderate choice between the balance of speed, memory and anti-aliasing power. Supersampling with multiple samples per pixel can greatly improve anti-aliasing power but takes much more time and memory. 
 </p>
 
 <h4 align="middle">Screenshot</h4>
