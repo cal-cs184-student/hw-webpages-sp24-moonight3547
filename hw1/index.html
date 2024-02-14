@@ -97,11 +97,11 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
   <table style="width=100%">
     <tr>
       <td>
-	<img src="hw1-task1time.jpg" align="middle" width="400" />
+				<img src="hw1-task1time.jpg" align="middle" width="400" />
         <figcaption align="middle">original runtime to draw the svg files for one time</figcaption>
       </td>
       <td>
-	<img src="hw1-task1extra.jpg" align="middle" width="400" />
+				<img src="hw1-task1extra.jpg" align="middle" width="400" />
         <figcaption align="middle">optimized runtime to draw the svg files for one time</figcaption>
       </td>
     </tr>
@@ -137,27 +137,30 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
 
 
 <h3 align="middle">Part 2: Antialiasing triangles</h3>
+<h4 align="middle">Algorithm Description</h4>
 
+<h4 align="middle">Implementation Explanation</h4>
+<h4 align="middle">Screenshot</h4>
 <div align="middle">
   <table style="width=100%">
     <tr>
       <td>
-	<img src="hw1-task2test4sr1.png" align="middle" width="400" />
+				<img src="hw1-task2test4sr1.png" align="middle" width="400" />
         <figcaption align="middle">basic/test4.svg without oversampling</figcaption>
       </td>
       <td>
-	<img src="hw1-task2test4sr1.png" align="middle" width="400" />
+				<img src="hw1-task2test4sr1.png" align="middle" width="400" />
         <figcaption align="middle">basic/test4.svg with sample rate 1</figcaption>
       </td>
     </tr>
     <br>
     <tr>
       <td>
-	<img src="hw1-task2test4sr4.png" align="middle" width="400" />
+				<img src="hw1-task2test4sr4.png" align="middle" width="400" />
         <figcaption align="middle">basic/test4.svg with sample rate 4</figcaption>
       </td>
       <td>
-	<img src="hw1-task2test4sr16.png" align="middle" width="400" />
+				<img src="hw1-task2test4sr16.png" align="middle" width="400" />
         <figcaption align="middle">basic/test4.svg with sample rate 16</figcaption>
       </td>
     </tr>
@@ -168,13 +171,39 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
 
 
 <h3 align="middle">Part 3: Transforms</h3>
-
-
+<h4 align="middle">Algorithm Description</h4>
+We fill the translate,scale,rotate functions in transform.cpp with the 3x3 matrices provided in the lecture. 
+<h4 align="middle">SVG File Description</h4>
+<p>The SVG file is stored under docs/ directory. 
+</p>
+<h4 align="middle">Screenshot</h4>
+The cubeman is now running towards right and waving his two hands to keep balance. 
+<div>
+	<img src="hw1-task3myrobotrun.jpg" align="middle" width="400" />
+	<figcaption align="middle">docs/my_robot.svg a running run waving his hands</figcaption>
+</div>
 
 <h2 align="middle">Section II: Sampling</h2>
 
 <h3 align="middle">Part 4: Barycentric coordinates</h3>
+Barycentric coordinates is a system of coordinates used for easily interpolating in any points of a triangle. By using the Barycentric coordinates we are able to easily see the proximity to each triangle's vertices and have the correct ratios between them. This allows us to have smooth transitions between colors or textures within a triangle which will contribute to antialiasing as well and makes it easier to sample points.
 
+In this example, with a triangle on the right side, we have a triangle with corners of red, blue, and green. The intermediate colors between them are created from the combination of relative proximities to each of the vertices. We can see that the middle of the triangle blends all of the colors together while the corners have the pure colors.
+<h4 align="middle">Screenshot</h4>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+				<img src="hw1-task4colorgrad.png" align="middle" width="400" />
+        <figcaption align="middle">basic/test7.svg a disk of color gradient</figcaption>
+      </td>
+      <td>
+				<img src="hw1-task4mycolorgrad.png" align="middle" width="400" />
+        <figcaption align="middle">a regular triangle of color gradient</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
 
 <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
 
