@@ -62,7 +62,11 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
 <p> Since we first find out the bounding box inside the viewplot. We only check those pixels in the bounding box whether the sample point of the pixel is inside the triangle in $O(1)$ time (constant time). Notice that the constant runtime of point-in-triangle test is large since it takes three line test and each includes a lot of calculation. 
 </p>
 <h4 align="middle">Screenshot</h4>
-<img src="hw1-task1test4.png" width="400" height="400" />
+<p>Below is the screenshot of drawing svg/basic/test4.svg without oversampling. </p>
+<div align="middle">
+<img src="hw1-task1test4.png" align="middle" width="400" />
+<figcaption align="middle">basic/test4.svg without oversampling</figcaption>
+</div>
 <h4 align="middle">Extra Credit</h4>
 We can use chrono::high_resolution_clock::now() to record the start time and end time of the redraw() function of DrawRend class. The optimization is much more obvious for 
 
