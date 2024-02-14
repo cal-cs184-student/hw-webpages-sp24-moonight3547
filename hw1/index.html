@@ -70,7 +70,7 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
 <h4 align="middle">Extra Credit</h4>
 <p>The optimized algorithm is to calculate the intersection of the three edges of a triangle with the axis $y$ equal to each possible value. All the pixels on the axis with x-value between the minimum x-value of intersection and the maximum x-value of intersection must be also inside the triangle since triangles are convex hulls. In this way, we don't need to calculate that much for point-in-triangle test and need to only fill the pixels in the triangle (about half the bounding box). 
 </p>
-<p>We can use chrono::high_resolution_clock::now() to record the start time and end time of the redraw() function of DrawRend class. Then we output the time cost each time we redraw the viewer. The optimization is much more obvious for svg files with more triangles to rasterize. 
+<p>We can use chrono::high_resolution_clock::now() to record the start time and end time of the redraw() function of DrawRend class. Then we output the time cost each time we redraw the viewer. The optimization is much more obvious for svg files with more triangles to rasterize. For example, the SVG file svg/basic/test3.svg has many triangles to rasterize and the original algorithm takes about $100$ times more runtime than the optimized algorithm to redraw the viewer. 
 </p>
 <div align="middle">
   <table style="width=100%">
@@ -88,9 +88,9 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
 </div>
 
 <div align="middle">
-  <table style="width=50%">
+  <table style="width=100%">
     <tr>
-      <td>SVG Files</td>
+      <td>SVG Files:</td>
       <td>svg/basic/test3.svg</td>
       <td>svg/basic/test4.svg</td>
       <td>svg/basic/test5.svg</td>
@@ -98,14 +98,14 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
     </tr>
     <br>
     <tr>
-      <td>Original time</td>
+      <td>Original time:</td>
       <td>6484 ms</td>
       <td>73 ms</td>
       <td>104 ms</td>
       <td>617 ms</td>
     </tr>
     <tr>
-      <td>Optimized time</td>
+      <td>Optimized time:</td>
       <td>59 ms</td>
       <td>55 ms</td>
       <td>53 ms</td>
