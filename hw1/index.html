@@ -58,13 +58,13 @@ But the efficiency improvement in triangle rasterization also help me practice a
 <h3 align="middle">Part 1: Rasterizing single-color triangles</h3>
 <h4 align="middle">Algorithm Description</h4> 
 <p>First, we can find out the bounding box of the triangle by find the minimum/maximum x,y values of the three given points of the triangle. 
-Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+0.5,y+0.5)$ is inside the triangle. If the sample point is inside the triangle, we fill the pixel with the given color of the triangle. 
+Then, check each pixel (x,y) in the bounding box whether the sample point (x+0.5,y+0.5) is inside the triangle. If the sample point is inside the triangle, we fill the pixel with the given color of the triangle. 
 </p>
 <h4 align="middle">Algorithm Effciency</h4>
-<p> Since we first find out the bounding box inside the viewplot. We only check those pixels in the bounding box whether the sample point of the pixel is inside the triangle in $O(1)$ time (constant time). Notice that the constant runtime of point-in-triangle test is large since it takes three line test and each includes a lot of calculation. Although this method takes a lot of time when the number of triangles is very large (e.g. svg/basic/test3.svg), the algorithm is no worse than one that checks each sample within the bounding box of the triangle since we ignore the part of triangle that outside the frame. 
+<p> Since we first find out the bounding box inside the viewplot. We only check those pixels in the bounding box whether the sample point of the pixel is inside the triangle in O(1) time (constant time). Notice that the constant runtime of point-in-triangle test is large since it takes three line test and each includes a lot of calculation. Although this method takes a lot of time when the number of triangles is very large (e.g. svg/basic/test3.svg), the algorithm is no worse than one that checks each sample within the bounding box of the triangle since we ignore the part of triangle that outside the frame. 
 </p>
 <h4 align="middle">Screenshot</h4>
-<p>Below is the screenshot of drawing svg/basic/test4.svg without oversampling. </p>
+<p>We can find the screenshot of drawing svg/basic/test4.svg without oversampling below. </p>
 <div align="middle">
   <table style="width=100%">
     <tr>
@@ -91,9 +91,7 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
   </table>
 </div>
 <h4 align="middle">Extra Credit</h4>
-<p>The optimized algorithm is to calculate the intersection of the three edges of a triangle with the axis $y$ equal to each possible value. All the pixels on the axis with x-value between the minimum x-value of intersection and the maximum x-value of intersection must be also inside the triangle since triangles are convex hulls. In this way, we don't need to calculate that much for point-in-triangle test and need to only fill the pixels in the triangle (about half the bounding box). 
-</p>
-<p>We can use chrono::high_resolution_clock::now() to record the start time and end time of svg.draw() inside the redraw() function of DrawRend class. Then we output the time cost each time we redraw the viewer. The optimization is much more obvious for svg files with more triangles to rasterize. For example, the SVG file svg/basic/test3.svg has many triangles to rasterize and the original algorithm takes about $11$ times more runtime than the optimized algorithm to redraw the viewer. The optimization has about 1000% improvement in execution time performance. 
+<p>The optimized algorithm is to calculate the intersection of the three edges of a triangle with the axis y equal to each possible value. All the pixels on the axis with x-value between the minimum x-value of intersection and the maximum x-value of intersection must be also inside the triangle since triangles are convex hulls. In this way, we don't need to calculate that much for point-in-triangle test and need to only fill the pixels in the triangle (about half the bounding box). 
 </p>
 <div align="middle">
   <table style="width=100%">
@@ -109,7 +107,8 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
     </tr>
   </table>
 </div>
-
+<p>We can use chrono::high_resolution_clock::now() to record the start time and end time of svg.draw() inside the redraw() function of DrawRend class. Then we output the time cost each time we redraw the viewer. The optimization is much more obvious for svg files with more triangles to rasterize. For example, the SVG file svg/basic/test3.svg has many triangles to rasterize and the original algorithm takes about 11 times more runtime than the optimized algorithm to redraw the viewer. The optimization has about 1000% improvement in execution time performance. 
+</p>
 <div align="middle">
   <table style="width=100%">
     <tr>
@@ -180,7 +179,7 @@ We fill the translate,scale,rotate functions in transform.cpp with the 3x3 matri
 	<figcaption align="middle">The matrices for 2D translate, scale, rotate operation</figcaption>
 </div>
 <h4 align="middle">SVG File Description</h4>
-<p>The SVG file is stored under docs/ directory. 
+<p>The SVG file is stored under docs/ directory. It is a modified version of svg/transform/robot.svg with some translate, scale, rotate operations to each components of the cubeman. 
 </p>
 <h4 align="middle">Screenshot</h4>
 The cubeman is now running towards right and waving his two hands to keep balance. 
@@ -220,7 +219,13 @@ On the right-hand side, we give another example of color gradients in regular tr
 </p>
 
 <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
-
+<h4 align="middle">Pixel Sampling Explanation</h4>
+<p>Pixel sampling is the process of getting the color of a pixel in screen-space from an estimated position in the given texture image. First, we have an ideal corresponding position in the texture space for a pixel in screen-space estimated by barycentric coordinates system we discussed above. Then, we can implement pixel sampling by nearest sampling method or bilinear sampling method. For nearest sampling, we select the color of the pixel in the texture image which is the nearest from the estimated position. For bilinear sampling method, we find the nearest four sampling point (u,v), (u,v+1), (u+1,v), (u+1,v+1) and use their color value to linearly interpolate the color value of the ideal position. 
+</p>
+<h4 align="middle">Texture Mapping Implementation</h4>
+<h4 align="middle">Two Methods Discussion</h4>
+We implemented two methods: nearest sampling method and bilinear sampling method. 
+Pixel Sampling is the process of obtaining the pixel from a texture image onto the screen image. We can implement this by using nearest pixel or by bilinear sampling. These are two different methods of obtaining a corresponding screen image pixel from a point on the texture image. We can use nearest pixel to get the closest sampled pixel to our point on the texture image, we can do this by rounding our point and then sampling the texture image. The other process of bilinear sampling involves using a linear interpolation to get the final point which is interpolated between the 4 closest points to our point on the texture image. We can achieve this with a lerp function which will take a linear combination between points to give us an interpolated point.
 <h4 align="middle">Screenshot</h4>
 <div align="middle">
   <table style="width=100%">
