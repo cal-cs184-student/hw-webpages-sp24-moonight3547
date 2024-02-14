@@ -97,11 +97,11 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
   <table style="width=100%">
     <tr>
       <td>
-				<img src="hw1-task1time.jpg" align="middle" width="400" />
+				<img src="hw1-task1origtime.jpg" align="middle" width="400" />
         <figcaption align="middle">original runtime to draw the svg files for one time</figcaption>
       </td>
       <td>
-				<img src="hw1-task1extra.jpg" align="middle" width="400" />
+				<img src="hw1-task1extratime.jpg" align="middle" width="400" />
         <figcaption align="middle">optimized runtime to draw the svg files for one time</figcaption>
       </td>
     </tr>
@@ -145,22 +145,22 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
   <table style="width=100%">
     <tr>
       <td>
-				<img src="hw1-task2test4sr1.png" align="middle" width="400" />
+				<img src="hw1-task2test4osr1.png" align="middle" width="400" />
         <figcaption align="middle">basic/test4.svg without oversampling</figcaption>
       </td>
       <td>
-				<img src="hw1-task2test4sr1.png" align="middle" width="400" />
+				<img src="hw1-task2test4osr1.png" align="middle" width="400" />
         <figcaption align="middle">basic/test4.svg with sample rate 1</figcaption>
       </td>
     </tr>
     <br>
     <tr>
       <td>
-				<img src="hw1-task2test4sr4.png" align="middle" width="400" />
+				<img src="hw1-task2test4osr4.png" align="middle" width="400" />
         <figcaption align="middle">basic/test4.svg with sample rate 4</figcaption>
       </td>
       <td>
-				<img src="hw1-task2test4sr16.png" align="middle" width="400" />
+				<img src="hw1-task2test4osr16.png" align="middle" width="400" />
         <figcaption align="middle">basic/test4.svg with sample rate 16</figcaption>
       </td>
     </tr>
@@ -173,6 +173,10 @@ Then, check each pixel $(x,y)$ in the bounding box whether the sample point $(x+
 <h3 align="middle">Part 3: Transforms</h3>
 <h4 align="middle">Algorithm Description</h4>
 We fill the translate,scale,rotate functions in transform.cpp with the 3x3 matrices provided in the lecture. 
+<div>
+	<img src="hw1-task3matrices.jpg" align="middle" width="400" />
+	<figcaption align="middle">The matrices for 2D translate, scale, rotate operation</figcaption>
+</div>
 <h4 align="middle">SVG File Description</h4>
 <p>The SVG file is stored under docs/ directory. 
 </p>
@@ -209,9 +213,62 @@ We give another example of color gradients in regular triangle shape. In this ex
 
 <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
 
+<h4 align="middle">Screenshot</h4>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+				<img src="hw1-task5nearestsr1.png" align="middle" width="400" />
+        <figcaption align="middle">svg/texmap/test5.svg with <br>nearest pixel sampling and sample rate 1</figcaption>
+      </td>
+      <td>
+				<img src="hw1-task5nearestsr16.png" align="middle" width="400" />
+        <figcaption align="middle">svg/texmap/test5.svg with <br>nearest pixel sampling and sample rate 16</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+				<img src="hw1-task5bilinearsr1.png" align="middle" width="400" />
+        <figcaption align="middle">svg/texmap/test5.svg with <br>bilinear pixel sampling and sample rate 1</figcaption>
+      </td>
+      <td>
+				<img src="hw1-task5bilinearsr16.png" align="middle" width="400" />
+        <figcaption align="middle">svg/texmap/test5.svg with <br>bilinear pixel sampling and sample rate 16</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
 
 <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
 
+<h4 align="middle">Screenshot</h4>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+				<img src="hw1-task6lvl0nearestsr1.png" align="middle" width="400" />
+        <figcaption align="middle">docs/my_texture.svg with level zero <br>sampling and nearest pixel sampling</figcaption>
+      </td>
+      <td>
+				<img src="hw1-task6lvl0bilinearsr1.png" align="middle" width="400" />
+        <figcaption align="middle">docs/my_texture.svg with level zero <br>sampling and bilinear pixel sampling</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+				<img src="hw1-task6nearestnearestsr1.png" align="middle" width="400" />
+        <figcaption align="middle">docs/my_texture.svg with nearest <br>level sampling and nearest pixel sampling</figcaption>
+      </td>
+      <td>
+				<img src="hw1-task6nearestbilinearsr1.png" align="middle" width="400" />
+        <figcaption align="middle">docs/my_texture.svg with nearest <br>level sampling and bilinear pixel sampling</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
 
 
 <h2 align="middle">Section III: Art Competition</h2>
