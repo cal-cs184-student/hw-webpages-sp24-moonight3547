@@ -172,8 +172,26 @@ We implement supersampling by adding two loops within the iteration of each pixe
   </table>
 </div>
 
-
-
+<h4 align="middle">Extra Credit</h4>
+<p>I implemented the jittered sampling for supersampling (commented below the codes for grid sampling in RasterizerImp::rasterize_triangle() function). This method is to randomly choose all the sample points inside the pixel (x,y), i.e. points in the rectangle with vertices (x,y), (x,y+1), (x+1, y), (x+1,y+1). Then we check whether each random sample point is inside the triangle and then average all the sample points to get the final image. 
+</p>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+				<img src="hw1-task2extragrid.png" align="middle" width="400" />
+        <figcaption align="middle">basic/test4.svg grid supersampling with sample rate 9</figcaption>
+      </td>
+      <td>
+				<img src="hw1-task2extrajittered.png" align="middle" width="400" />
+        <figcaption align="middle">basic/test4.svg jittered supersampling with sample rate 9</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>Above is the screenshots of the results from grid supersampling and jittered supersampling both with sample rate 9. The difference is that the pixel colors for jittered supersampling is more random and smooth for a steep edge. The reason is that grid supersampling only takes the grid points as sample and results are the same (similar/periodic) along the edge. So the result of grid supersampling makes the color on the edge a kind of lighter. But jittered supersampling results in both darker and lighter color which is better on average for single-colored triangles.  
+</p>
+  
 
 <h3 align="middle">Part 3: Transforms</h3>
 <h4 align="middle">Algorithm Description</h4>
@@ -192,11 +210,12 @@ The cubeman is now running towards right and waving his two hands to keep balanc
 	<figcaption align="middle">docs/my_robot.svg a running run waving his hands</figcaption>
 </div>
 <h4 align="middle">Extra Credit</h4>
-<p>I implement another two keys E and R. Key R is used to rotate the viewplot clockwise by 10 degrees and key E is used to rotate the viewplot counter-clockwise by 10 degrees. The screenshot below displays how the two keys rotate the bounding box and the cube inside the viewplot. </p>
+<p>I implement another two keys E and R for the renderer DrawRend. Key R is used to rotate the viewplot clockwise by 10 degrees and key E is used to rotate the viewplot counter-clockwise by 10 degrees. The screenshot below displays how the two keys rotate the bounding box and the cube inside the viewplot. </p>
 <div align="middle">
 	<img src="hw1-task3extra.png" align="middle" width="400" />
 	<figcaption align="middle">svg/basic/test5.svg displaying the viewplot rotated by the two keys E and R</figcaption>
 </div>
+<p>My implementation is to create another matrix screen_rotate to control the rotation of the viewplot around the center. The matrix is the multiplication of matrices of the 3 operations: translate(width/2, height/2), rotate(alpha), translate(-width/2, -height/2). Everytime we need to use the matrix ndc_to_screen to transfer an object from NDC to screen-space we need to multiply the matrix screen_rotate on the left. In another word, we use screen_rotate * ndc_to_screen as the new matrix for the functionality of the original ndc_to_screen matrix. </p>
 
 <h2 align="middle">Section II: Sampling</h2>
 
@@ -307,11 +326,64 @@ Level sampling is the process to find the appropriate mipmap level to use in tex
   </table>
 </div>
 
+<h4 align="middle">Extra Credit</h4>
+<p>I implemented anisotropic filtering for texture sampling. (Commented under Part 6 code in RasterizerImp::rasterize_textured_triangle() function.) I decide to take 3 samples for each direction. The two directions are the gradient of uv-space (tex-coordinates) w.r.t. image space. The gradient is estimated by the difference of uv-values with one-grid increment in x-value and y-value. 
+The calculation of gradients is similar with bilinear sampling. We use the two gradients as the directions and take 3x3=9 samples with Gaussian weight (i.e. Gaussian function of the norm of the difference in uv-space). 
+</p>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+				<img src="hw1-task6extraanisotropicfiltering.png" align="middle" width="400" />
+        <figcaption align="middle">svg/basic/test6.svg with anisotropic filtering</figcaption>
+      </td>
+      <td>
+				<img src="hw1-task6extranearest.png" align="middle" width="400" />
+        <figcaption align="middle">svg/basic/test6.svg with nearest sampling</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+				<img src="hw1-task6extrabilinear.png" align="middle" width="400" />
+        <figcaption align="middle">svg/basic/test6.svg with bilinear sampling</figcaption>
+      </td>
+      <td>
+				<img src="hw1-task6extratrilinear.png" align="middle" width="400" />
+        <figcaption align="middle">svg/basic/test6.svg with trilinear sampling</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>Anisotropic filtering has a better result. It is not that blurred like trilinear sampling. It is not that pixelated and jaggy like nearest sampling. The result of anisotropic filtering is also more clear and smooth than bilinear sampling. 
+Anisotropic filtering is better to deal with steep angles since it takes samples in texture image in better direction. 
+However, anisotropic filtering takes much more time since it need a lot of gradients calculation and texture sample points. Below is the runtime of the four methods to draw svg/basic/test6.svg. 
+</p>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>Texture Filter: </td>
+      <td>anisotropic filtering</td>
+      <td>nearest sampling</td>
+      <td>bilinear sampling</td>
+      <td>trilinear sampling</td>
+    </tr>
+    <br>
+    <tr>
+      <td>Runtime: </td>
+      <td>497 ms</td>
+      <td>25 ms</td>
+      <td>44 ms</td>
+      <td>25 ms</td>
+    </tr>
+  </table>
+</div>
 
 <h2 align="middle">Section III: Art Competition</h2>
 <p>If you are not participating in the optional art competition, don't worry about this section!</p>
 
 <h3 align="middle">Part 7: Draw something interesting!</h3>
 None. 
+
 </body>
 </html>
