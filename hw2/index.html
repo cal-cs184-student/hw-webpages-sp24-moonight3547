@@ -1,7 +1,912 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Homework 2 index.html here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    background-color: white;
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+  kbd {
+    color: #121212;
+  }
+</style>
+<title>CS 184 Mesh Edit</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2018</h1>
+<h1 align="middle">Project 2: Mesh Edit</h1>
+<h2 align="middle">Yuan Xu, SID: 3039823660</h2>
+
+<div align="middle">
+<p>Link to write-up website: <a href="https://cal-cs184-student.github.io/hw-webpages-sp24-moonight3547/hw2/index.html">Visit My Website!</a>
+</p>
+</div>
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<h3>Basic Tasks: </h3>
+<p>	In assignment 2 (this assignment), I generated smooth curves and surfaces with implementation of various techniques. From Part 1 to Part 6, I implemented many functionalities about Bezier curves, Bezier surfaces, and triangle meshes with half-edge data structure. 
+In Part 1, I calculated Bezier curves (with respect to $t$) with multiple iterations. 
+In Part 2, I used recursive methods to find the curve (w.r.t. $u$) of all points on the Bezier curves at some $v$-value to form a smooth Bezier surface. 
+In Part 3, I calculated the normal vector at each vertex in the meshes which is defined as the area-weighted average of the normal vectors of all the neighbor faces. 
+In Part 4 and Part 5, I implemented the two basic topological operations, edge flip and edge split, respectively. 
+In Part 6, I implemented the Loop subdivision (a geometric operation) to make the meshes more detailed and smoother.
+</p>
+<h3>Extra Credit: </h3> 
+<p>I implement all the extre credits (including Part 5 and Part 6). In part 5, I implement the edge split operation with support to edges on the boundary. In part 6, I implement the Loop subdivision (4-1 subdivision) with support to vertices and edges on the boundary (crease) for extra credit I. Besides, I also implement both the modified Butterfly subdivision (an interpolating subdivision algorithm) and $\sqrt{3}$-subdivision (an approximation subdivision algorithm) for extra credit II. For the potential extra credit, I'm still working to get a better result. 
+</p>
+<br>
+
+
+<h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+
+<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
+
+
+<!--Briefly explain de Casteljau's algorithm and how you implemented it in order to evaluate Bezier curves.-->
+<h4>De Casteljau's Algorithm Explanation: </h4>
+<p>
+The input of de Casteljau's Algorithm is a set of control points defining the Bezier curve and the parameter $t$ in the range $[0,1]$ where we need to estimate the point on the Bezier curve. 
+The output of de Casteljau's Algorithm is the point along the Bezier curve estimated at the given $t$-value. <br>
+Starting with the original set of control points, the algorithm consists of multiple iterations (steps). 
+In each recursive step, given a set of intermediate control points, the algorithm linearly interpolates between adjacent control points with a parameter $t$, i.e. $$p'_i = lerp(p_i, p_{i+1}, t) = (1-t)p_i + tp_{i+1}$$
+The algorithm then replace the given set of control points with the newly interpolated points. 
+From $p_1, p_2,\cdots, p_n$ to $p'_1, p'_2, \cdots, p'_{n-1}$, the number of control points decrease by $1$ in each step. 
+Applying this step recursively or multiple times, the algorithm eventually comes to a single point, which is the estimated point on the Bezier curve at the given parameter $t$.
+</p>
+<p>
+<h4>Implementation Explanation: </h4>
+Our implementation is to complete the <code>BezierCurve::evaluateStep(...)</code> function in <code>student_code.cpp</code>. 
+This function takes <code>std::vector<Vector2D> const &points</code>, a list of intermediate control points (2D) at the parameter $t$ as the input. 
+My implementation creates <code>std::vector<Vector2D> new_points</code> to store all the newly interpolated control points and calculate their position one by one using the formula $$\text{new_points[i]} = (1-t) * \text{points[i]} + t * \text{points[i+1]}$$
+After calculation, the function outputs <code>std::vector<Vector2D> new_points</code>, the list of new intermediate control points at the parameter $t$ in the next subdivision level. 
+</p>
+<br>
+
+<!--Take a look at the provided .bzc files and create your own Bezier curve with 6 control points of your choosing. Use this Bezier curve for your screenshots below.-->
+<h4>Screenshots:</h4>
+<p>
+Below show the screenshots of de Casteljau's algorithm results of <code>bzc/curve1.bzc</code> and <code>bzc/curve2.bzc</code>. The command to deal with <code>bzc/curve1.bzc</code> in the terminal is <code>./meshedit ../bzc/curve1.bzc</code>. 
+</p>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+<td>
+	<img src="images/hw2-task1-curve1.jpg" align="middle" width="400px"/>
+	<figcaption>bzc/curve1.bzc Bezier Curve Subdivision</figcaption>
+</td>
+<td>
+	<img src="images/hw2-task1-curve2.jpg" align="middle" width="400px"/>
+	<figcaption>bzc/curve2.bzc Bezier Curve Subdivision</figcaption>
+</td>
+</tr>
+</table>
+</div>
+<br>
+
+<!--Show screenshots of each step / level of the evaluation from the original control points down to the final evaluated point. Press <kbd>E</kbd> to step through. Toggle <kbd>C</kbd> to show the completed Bezier curve as well.-->
+<p>
+I construct a .bzc file <code>bzc/my_curve.bzc</code> of $6$ control points after taking a look at the provided <code>.bzc</code> files. Below is the screenshots of each step / level of the evaluation from the original control points in my <code>.bzc</code> file down to the final evaluated point. I pressed key <kbd>E</kbd> to step through and toggled key <kbd>C</kbd> to show the completed Bezier curve as well. 
+</p>
+<!-- Example of including multiple figures -->
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+	<td>
+	<img src="images/hw2-task1-mycurve0.jpg" align="middle" width="300px"/>
+	<figcaption>Bezier Curve Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task1-mycurve1.jpg" align="middle" width="300px"/>
+	<figcaption>Bezier Curve Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task1-mycurve2.jpg" align="middle" width="300px"/>
+	<figcaption>Bezier Curve Subdivision Level 2</figcaption>
+	</td>
+</tr>
+<br>
+<tr align="center">
+	<td>
+	<img src="images/hw2-task1-mycurve3.jpg" align="middle" width="300px"/>
+	<figcaption>Bezier Curve Subdivision Level 3</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task1-mycurve4.jpg" align="middle" width="300px"/>
+	<figcaption>Bezier Curve Subdivision Level 4</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task1-mycurve5.jpg" align="middle" width="300px"/>
+	<figcaption>Bezier Curve Subdivision Level 5</figcaption>
+	</td>
+</tr>
+</table>
+</div>
+<br>
+
+
+<!--Show a screenshot of a slightly different Bezier curve by moving the original control points around and modifying the parameter \(t\) via mouse scrolling.-->
+<p>
+Below displays a screenshot of a slightly different Bezier curve by moving one original control points around and another screenshot of modifying the parameter $t$ via mouse scrolling.
+</p>  
+<div align="middle">
+<table style="width:100%">
+	<tr align="center">
+	<td>
+		<img src="images/hw2-task1-mycurve5.jpg" align="middle" width="300px"/>
+		<figcaption>original (bzc/my_curve.bzc)</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task1-mycurve_modified1.jpg" align="middle" width="300px"/>
+		<figcaption>moving a control point</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task1-mycurve_modified2.jpg" align="middle" width="300px"/>
+		<figcaption>mouse scrolling to change $t$</figcaption>
+	</td>
+	</tr>
+</table>
+</div>
+<br>
+
+
+<h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
+<!--Briefly explain how de Casteljau algorithm extends to Bezier surfaces and how you implemented it in order to evaluate Bezier surfaces.-->
+
+<h4>De Casteljau's Algorithm Explanation:</h4>
+<p>
+De Casteljau's algorithm can be extended for Bezier surfaces (which is also known as Bezier patches). 
+The input of the algorithm is a 2-dimensional grid of control points defining the Bezier surface and two parameter $u,v$. 
+The output of the algorithm is the point on the Bezier surface estimate at $u,v$ along two axis respectively. 
+Input control points is given in a 2D grid. 
+We first estimate control points at $v$ along second axis using the formula we derived in de Casteljau's algorithm for Bezier curves, i.e. $$p'_{i,j} = lerp(p_{i,j}, p_{i,j+1}, v) = (1-v)p_{i,j} + vp_{i,j+1}$$
+Suppose the number of control points in second axis to be $n$. We operate such steps for $n-1$ times and derive estimate points $q_i$ on the Bezier curves along second axis (for each row in the grid) at parameter $v$. 
+Then, we estimate a point on the Bezier curve with $q_i$ as the control points with de Casteljau's algorithm in the direction of first axis, i.e. $$q'_{i} = lerp(q_{i}, q_{i+1}, u) = (1-u)q_{i} + uq_{i+1}$$
+The single point we get in the last iteration of de Casteljau's algorithm operating on $(q_i)$ is the estimated 3D point on the Bezier surface (patch). 
+</p>
+<br>
+<h4>Implementation Explanation:</h4>
+<p>
+Our implementation still need to complete <code>BezierPatch::evaluateStep(...)</code> function in <code>student_code.cpp</code> which is similar with <code>BezierCurve::evaluateStep(...)</code> in Part 1. 
+Differently, this function takes <code>std::vector<Vector3D> const &points</code>, a list of intermediate control points (3D), and the parameter $t$ as the input. 
+Similar to what we do in Part 1, my implementation creates <code>std::vector<Vector3D> new_points</code> to store all the newly interpolated 3D control points and calculate their position one by one using the formula $$\text{new_points[i]} = (1-t) * \text{points[i]} + t * \text{points[i+1]}$$
+After calculation, the function outputs <code>std::vector<Vector3D> new_points</code>, the list of new intermediate control points at the parameter $t$ in the next subdivision level (here $t$ is an argument which may be $u$ or $v$ depending on we evaluate a step along which axis of the 2D grid of control points). 
+</p>
+<p>
+Our implementation also need to complete <code>BezierPatch::evaluate1D(...)</code> function in <code>student_code.cpp</code> which will invoke <code>BezierPatch::evaluateStep(...)</code> at given parameter $t$ for $n-1$ times where $n$ is the number of control points given in a list <code>std::vector<Vector3D> const &points</code>. 
+The result of the function is the estimated points of Bezier curve defined by each row of the orginal grid of control points. 
+</p>
+<p>
+Besides, we implement <code>BezierPatch::evaluate(double u, double v)</code> function in <code>student_code.cpp</code> where $u,v$ are the parameters along rows and columns respectively.  
+The original grid of control points is stored in a two-dimensional data structure <code>std::vector< std::vector<Vector3D> > controlPoints</code>. 
+The function will invoke <code>BezierPatch::evaluate1D(controlPoints[i], v)</code> function for each row $i$ of the original grid of <code>controlPoints</code> to observe an estimate point on the Bezier curve defining by the row of control points at parameter $v$. 
+Store all the estimated points observed from each row in a list <code>std::vector<Vector3D> newPoints</code>. 
+Use these estimated points as the control points, we can invoke <code>BezierPatch::evaluate1D(newPoints, u)</code> function to get the estimate point on the Bezier curve defining by these estimated points at parameter $u$. 
+The result of the function is the estimated point of Bezier surface defined by the original grid of control points. 
+</p>
+<br>
+
+<!--Show a screenshot of bez/teapot.bez (not .dae) evaluated by your implementation.-->
+<h4>Screenshots:</h4>
+<p>
+Below is the screenshots of <code>bez/teapot.bez</code> evaluated by your implementation. The command in the terminal is <code>./meshedit ../bez/teapot.bez</code>. 
+</p>
+<br>
+<div align="middle">
+<img src="images/hw2-task2-sanity-check.jpg" align="middle" width="50%">
+<figcaption>bez/teapot.bez Bezier Surface Subdivision</figcaption>
+</div>
+<br>
+
+
+<h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
+
+<h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
+
+<!--Briefly explain how you implemented the area-weighted vertex normals.-->
+<h4>Implementation Explanation:</h4>
+<p>
+I implement area-weighted vertex normals by completing the function <code>Vertex::normal(void)</code> which will return an approximate unit normal at this vertex computed by taking the area-weighted average of the normals of neighboring triangles, then normalizing. 
+We can find the implementation of the function <code>Face::normal(void)</code> in <code>class Face</code> which iterates all the half-edges along the face boundary and sum up all the cross product of adjacent vertices on the face and output the unit vector of the sum of cross products. 
+Namely, for a triangle $\Delta u,v,w$ where $u,v,w$ are three vertices of the triangle, we have $(u\times v+v\times w+w\times u)$ is perpendicular to the plane of the triangle and has a length (l2-norm) equal to the area of the triangle $S_{\Delta u,v,w}$, i.e. 
+$$N_{\Delta u,v,w} = \frac{u\times v+v\times w+w\times u}{\parallel u\times v+v\times w+w\times u\parallel}$$
+<br>
+Proof of Correctness: 
+For any vector $t$ parallel with the plane of the triangle $\Delta u,v,w$, we have $t = \alpha (v-u) + \beta (w-u)$. What we need to prove is that $(u\times v+v\times w+w\times u)\cdot (v-u) = 0,(u\times v+v\times w+w\times u)\dot (w-u) = 0$. Notice that $v-u$ and $u-w$ are symmetric and we can only prove the equality for $v-u$. 
+$$(v-u)\cdot (u\times v+v\times w+w\times u) = v\cdot(u\times v)-u\cdot(u\times v)+v\cdot(v\times w)-u\cdot(v\times w)+v\cdot(w\times u)-u\cdot(w\times u)$$
+Note that $u\cdot (u\times v) = u\cdot (v \times u) = 0, u\cdot(v\times w) = v\cdot (w\times u)$ (the basic property of cross product), 
+$$(v-u)\cdot (u\times v+v\times w+w\times u) = 0-0+0-u\cdot(v\times w)+v\cdot(w\times u)-0 = 0$$
+Hence, the normal of a triangle (face) has the same direction of $u\times v+v\times w+w\times u$. 
+<br>
+Similarly, we can iterate all the half-edges rooted at "this" vertex and record all the neighbor vertices of "this" vertex (i.e. the vertices on the other side of the half-edges). 
+The method to iterate all neighbor vertices (all the half-edges rooted in "this" vertex) is using <code>h->twin()->next()</code> to find the next half-edge, which can be learned from the implementation of <code>Vertex::degree(void)</code> function. 
+Then, we sum up all the cross product of any two adjacent neighbor vertices and return the unit vector of the sum after normalizing the sum of cross products to norm $1$. 
+<br>
+Proof of Correctness: The normal vector of a triangle is the unit vector of the sum of all the three cross products of three vertices in the same direction (the direction is clockwise/counter-clockwise depending on whether the triangle faces to the exterior or not). 
+The length (l2-norm) of the sum of cross products can be proved to be a scalar multiple (actual $\frac 1 2$) of the area of the triangle.
+Therefore, $V_v$, the area-weight vector of face normals of vertex $v$ with neighbor vertices $v_1,v_2,\cdots, v_d$ (degree $d$, $v_{d+1}:=v_1$) in one direction is
+$$V_v = \frac{\sum\limits_{i=1}^{d} S_{\Delta v,v_i,v_{i+1}} N_{\Delta v,v_i,v_{i+1}}}{\sum\limits_{i=1}^{d} S_{\Delta v,v_i,v_{i+1}}} 
+= \frac{\sum\limits_{i=1}^{d} \parallel V_{\Delta v,v_i,v_{i+1}}\parallel \cdot \frac{V_{\Delta v,v_i,v_{i+1}}}{\parallel V_{\Delta v,v_i,v_{i+1}}\parallel}}{\sum\limits_{i=1}^{d} S_{\Delta v,v_i,v_{i+1}}} = \frac{\sum\limits_{i=1}^{d} V_{\Delta v,v_i,v_{i+1}}}{\sum\limits_{i=1}^{d} S_{\Delta v,v_i,v_{i+1}}}$$
+where we can find $V_{\Delta v,v_i,v_{i+1}} = v\times v_i + v_i\times v_{i+1} + v_{i+1}\times v$ from the implementation of the function <code>Face::normal(void)</code>. 
+Hence, we can derive the expression of $V_v$, the area-weighted average of face normal: 
+$$V_v = \frac{\sum\limits_{i=1}^{d} v\times v_i + v_i\times v_{i+1} + v_{i+1}\times v}{\sum\limits_{i=1}^{d} S_{\Delta v,v_i,v_{i+1}}} = \frac{\sum\limits_{i=1}^{d} v_i\times v_{i+1} + \sum\limits_{i=1}^{d} (v\times v_i +v_i\times v)}{\sum\limits_{i=1}^{d} S_{\Delta v,v_i,v_{i+1}}} = \frac{\sum\limits_{i=1}^{d} v_i\times v_{i+1}}{\sum\limits_{i=1}^{d} S_{\Delta v,v_i,v_{i+1}}}$$
+The area-weight vertex normal $N_v$ is the unit vector of $V_v$, the weighted-average of face normals, i.e. $N_v$ is also the unit vector of $\sum\limits_{i=1}^{d} v_i\times v_{i+1}$, which prove the correctness of our implementation. 
+</p>
+<br>
+
+<!--  Show screenshots of dae/teapot.dae (not .bez) comparing teapot shading with and without vertex normals. Use <kbd>Q</kbd> to toggle default flat shading and Phong shading.-->
+<h4>Screenshots:</h4>
+<p>
+Below show the two screenshots after running <code>./meshedit ../dae/teapot.dae</code>. On the left is the meshes of a teapot with default flat shading. On the right is the result after we press <kbd>Q</kbd> to apply Phong shading.
+Teapot shading without vertex normals (the default flat shading) looks very flat and not smooth with color changing not continuously. Teapot shading with vertex normals (Phong shading) looks much smoother and no longer flat. 
+</p>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+<td>
+	<img src="images/hw2-task3-mesh.jpg" align="middle" width="400px"/>
+	<figcaption>dae/teapot.dae meshes with flat shading</figcaption>
+</td>
+<td>
+	<img src="images/hw2-task3-sanity-check.jpg" align="middle" width="400px"/>
+	<figcaption>dae/teapot.dae meshes with Phong shading</figcaption>
+</td>
+</tr>
+</table>
+</div>
+	
+<br>
+
+
+<h3 align="middle">Part 4: Edge Flip</h3>
+<!--Briefly explain how you implemented the edge flip operation and describe any interesting implementation / debugging tricks you have used.-->
+<h4>Implementation Explanation:</h4>
+<p>
+Implementation for edge flip needs to first find all the 4 vertices and 5 edges involved in the operation. We should also find pointers to each half-edges and faces. 
+Then, we update all the pointers in each mesh elements to complete such a topological operation. The topological structure should transform into a new one with new faces $\{a,d,c\},\{a,b,d\}$ instead of the old faces $\{a,b,c\},\{b,d,c\}$. 
+</p>
+<br>
+<div align="middle">
+	<img src="images/hw2-task4-algo.jpg" align="middle" width="50%">
+	<figcaption>Edge Flip Operation</figcaption>
+</div>
+<br>
+<h4>Interesting Tricks:</h4> 
+<p>
+Trick 1: When implementing the edge flip operation, we need to make sure that all mesh elements' neighbors (pointers of related half-edges, edges, vertices and faces) are updated after we flip an edge. 
+In order to not forget to update some information in some mesh elements, we list all the pointers in each type of mesh elements (e.g. next(), twin(), vertice(), edge(), face() for each half-edge) and reset all their values no matter whether they are changed. 
+The <code>setNeighbor()</code> function provides a lot of help to make the implementation clear and brief. 
+In this way, we can make sure that our implementation is correct. 
+Then, we delete the redundant update to those unchanged information. 
+<br>
+Trick 2: We can draw a graph to show how the old and new topological structure should look like before and after the edge flip. 
+Then, we can label all the half-edges, edges, vertices, and faces in the graph using the same variable name in our implementation. 
+In this way, we can make clear the information that we need to update. 
+</p>
+<br>
+	
+<!--Show screenshots of the teapot before and after some edge flips.-->
+<h4>Screenshots:</h4>
+<p>
+Below show the screenshots of the teapot before flips, after $1$ flip and after multiple edge flips. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+	<tr align="center">
+	<td>
+		<img src="images/hw2-task4-flip0.jpg" align="middle" width="300px"/>
+		<figcaption>original teapot with no flip</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task4-flip1.jpg" align="middle" width="300px"/>
+		<figcaption>teapot with $1$ flip</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task4-flip2.jpg" align="middle" width="300px"/>
+		<figcaption>teapot with multiple flips</figcaption>
+	</td>
+	</tr>
+</table>
+</div>
+<br>
+<!--Write about your eventful debugging journey, if you have experienced one.-->
+<h4>Debugging Journey:</h4>
+<p>
+No debugging journey. Everything goes through successfully. 
+</p>
+<br>
+
+<h3 align="middle">Part 5: Edge Split</h3>
+<!--Briefly explain how you implemented the edge split operation and describe any interesting implementation / debugging tricks you have used.-->
+<h4>Implementation Explanation:</h4>
+<p>
+Implementation for edge split needs to first find all the 4 vertices and 5 edges involved in the operation. We should also find pointers to each half-edges and faces. 
+Then, we update all the pointers in each mesh elements to complete such a topological operation. 
+The topological structure should transform into a new one with new faces $\{a,m,c\},\{a,b,m\},\{b,d,m\},\{m,d,c\}$ instead of the old faces $\{a,b,c\},\{b,d,c\}$ where $m$ is the new inserted vertex. 
+Unlike edge flips, edge splits involve insertion of new vertices, edges, half-edges and faces, and we also need to implement the calculation and assignment of their positions after the creation of new vertices. 
+</p>
+<br>
+<div align="middle">
+	<img src="images/hw2-task5-algo.jpg" align="middle" width="50%">
+	<figcaption>Edge Flip Operation</figcaption>
+</div>
+<br>
+<h4>Interesting Tricks:</h4>
+<p>
+Trick 1: When implementing the edge split operation, we need to make sure that all mesh elements' neighbors (pointers of related half-edges, edges, vertices and faces) are updated after we split an edge. 
+In order to not forget to update some information in some mesh elements, we list all the pointers in each type of mesh elements (e.g. next(), twin(), vertice(), edge(), face() for each half-edge) and reset all their values no matter whether they are changed. 
+The <code>setNeighbor()</code> function provides a lot of help to make the implementation clear and brief. 
+In this way, we can make sure that our implementation is correct. 
+Then, we delete the redundant update to those unchanged information. 
+<br>
+Trick 2: We can draw a graph to show how the old and new topological structure should look like before and after the edge split. 
+Then, we can label all the half-edges, edges, vertices, and faces in the graph using the same variable name in our implementation. 
+In this way, we can make clear the information that we need to update. 
+</p>
+<br>
+<!--Show screenshots of a mesh before and after some edge splits. -->
+<h4>Screenshots:</h4>
+<p>
+Below are the screenshots of a mesh (<code>dae/.dae</code>) before edge splits, after $1$ edge split, and after some edge splits. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+	<tr align="center">
+	<td>
+		<img src="images/hw2-task5-split0.jpg" align="middle" width="300px"/>
+		<figcaption>original teapot with no edge splits</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task5-split1.jpg" align="middle" width="300px"/>
+		<figcaption>teapot with $1$ edge split</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task5-split2.jpg" align="middle" width="300px"/>
+		<figcaption>teapot with multiple edge splits</figcaption>
+	</td>
+	</tr>
+</table>
+</div>
+<br>
+
+<!--Show screenshots of a mesh before and after a combination of both edge splits and edge flips.-->
+<p>
+Below display screenshots of a mesh before and after a combination of both edge splits and edge flips.
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+	<tr align="center">
+	<td>
+		<img src="images/hw2-task5-split0.jpg" align="middle" width="300px"/>
+		<figcaption>original teapot with no edge splits or flips</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task5-splitflip1.jpg" align="middle" width="300px"/>
+		<figcaption>teapot with multiple edge splits and flips</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task5-splitflip2.jpg" align="middle" width="300px"/>
+		<figcaption>teapot with more edge splits and flips</figcaption>
+	</td>
+	</tr>
+</table>
+</div>
+<br>
+	
+<!--Write about your eventful debugging journey, if you have experienced one.-->
+<h4>Debugging Journey:</h4>
+<p>
+No debugging journey. Everything goes through successfully. 
+</p>
+<br>
+<!--If you have implemented support for boundary edges, 
+	show screenshots of your implementation properly handling split operations on boundary edges.-->
+<h4>Extra Credit:</h4>
+<p>
+I have implemented support for boundary edges in my edge split operations. 
+The idea is similar with interior edges but we need to find half-edge on the boundary and only split the triangle on the other side into two triangles. 
+Below is the screenshots of my implementation properly handling split operations on boundary edges in <code>dae/beetle.dae</code>. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+	<tr align="center">
+	<td>
+		<img src="images/hw2-task5-extra0.jpg" align="middle" width="300px"/>
+		<figcaption>original beetle with one boundary edge selected</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task5-extra1.jpg" align="middle" width="300px"/>
+		<figcaption>beetle with the selected boundary edge splitted</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task5-extra2.jpg" align="middle" width="300px"/>
+		<figcaption>beetle with more boundary edges splitted</figcaption>
+	</td>
+	</tr>
+</table>
+</div>
+<br>
+	
+<h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
+<!--Briefly explain how you implemented the loop subdivision and describe any interesting implementation / debugging tricks you have used.-->
+<h4>Implementation Explanation:</h4>
+<p>
+In Part 6, I implemented a mesh upsampling method, called Loop subdivision. 
+Loop subdivision upsamples a mesh by first subdividing each of its triangles into four smaller triangles and then updating vertices of subdivided mesh based on some weighting scheme.
+We can separate Loop subdivision into several topological operations and geometric operations to the mesh. 
+Topological opertions: We first find the midpoints on all the old edges and split all these old edges. 
+Then, we flip all the newly inserted edges between one old vertex (even vertex) and one newly inserted vertex (odd vertex). 
+After that, all the triangle faces are splitted into $4$ smaller triangles. 
+</p>
+<br>
+<div align="middle">
+	<img src="images/hw2-task6-algo1.jpg" align="middle" width="50%">
+	<figcaption>Edge Flip Operation</figcaption>
+</div>
+<p>
+Geometric operations: Here, we only consider the situations not on the boundary (crease and boundary are discussed in Extra Credit). 
+We need to calculate the new positions for each old vertex (even vertex) and each newly inserted vertex (odd vertex). 
+For an old vertex, the new position is the weighted average of all its neighbor vertices (including itself). The weight of each neighbor is $u$ and the weight of its original position is $1-nu$ where $n$ is its degree. 
+For a newly inserted vertex not on the boundary, we must find $4$ old vertices during the edge split operations. The weights of the two vertices on the edge are $\frac 3 8$, and the weights for the other two vertices are $\frac 1 8$. 
+</p>
+<p>
+To implement Loop subdivision, we need to make a good schedule so that the topological operations and geometric operations will not influence each other. 
+We can first compute all the new positions for all the vertices in the input mesh using the Loop subdivision rule and store them in Vertex::newPosition. At this point, we also want to mark each vertex as being a vertex of the original mesh. 
+Then, we compute the updated vertex positions associated with edges, and store it in <code>Edge::newPosition</code>. 
+After that, we split every edge in the mesh, assign the position of newly inserted vertex and store the information that whether the edge is newly inserted in boolean variable <code>Edge::isNew</code>. 
+Later, we need to flip any new edge that connects an old and new vertex to finish all the topological operations. 
+Finally, we copy the new vertex positions from <code>Vertex::newPosition</code> to <code>Vertex::position</code> to finish all the geometric operations. 
+
+</p>
+<br>
+<div align="middle">
+	<img src="images/hw2-task6-algo2.jpg" align="middle" width="50%">
+	<figcaption>Edge Flip Operation</figcaption>
+</div>
+<br>
+<h4>Interesting Tricks:</h4>
+<p>
+Trick 1: When implementing the topological operation, we need to make sure that all mesh elements' neighbors (pointers of related half-edges, edges, vertices and faces) are updated. 
+In order to not forget to update some information in some mesh elements, we list all the pointers in each type of mesh elements (e.g. next(), twin(), vertice(), edge(), face() for each half-edge) and reset all their values no matter whether they are changed. 
+The <code>setNeighbor()</code> function provides a lot of help to make the implementation clear and brief. 
+In this way, we can make sure that our implementation is correct. 
+Then, we delete the redundant update to those unchanged information. 
+<br>
+Trick 2: We can draw a graph to show how the old and new topological structure should look like before and after the topological operations. 
+Then, we can label all the half-edges, edges, vertices, and faces in the graph using the same variable name in our implementation. 
+In this way, we can make clear the information that we need to update. 
+<br>
+Trick 3: We can compute all the new positions in the old topological structure and store them in the objects of corrresponding vertices and edges. 
+Then, we can update the topological information about vertices, edges, half-edges and faces using edge flips and edge splits. 
+Later, we can assign the new geometric position to each vertex with the help of <code>Vertex::isNew, Edge::isNew</code> tags. 
+<br>
+Trick 4: We can comment all the position assignment (the geometric operations) and check whether the update in topological structure is correct or not from the GUI easily. 
+</p>
+<br>
+
+<!--Take some notes, as well as some screenshots, of your observations on how meshes behave after loop subdivision. What happens to sharp corners and edges? Can you reduce this effect by pre-splitting some edges?-->
+<h4>Screenshots:</h4>
+<p>
+Below are some screenshots to show how meshes (dae/quadball.dae, dae/torus/input.dae) behave after loop subdivision. 
+We can find that the meshes are getting smoother and the corners are getting rounded after Loop subdivisions. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-quadball0.jpg" align="middle" width="300px"/>
+	<figcaption>Quadball Loop Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-quadball1.jpg" align="middle" width="300px"/>
+	<figcaption>Quadball Loop Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-quadball2.jpg" align="middle" width="300px"/>
+	<figcaption>Quadball Loop Subdivision Level 2</figcaption>
+	</td>
+</tr>
+<br>
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-torus0.jpg" align="middle" width="300px"/>
+	<figcaption>Torus Loop Subdivision Level 3</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-torus1.jpg" align="middle" width="300px"/>
+	<figcaption>Torus Loop Subdivision Level 4</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-torus2.jpg" align="middle" width="300px"/>
+	<figcaption>Torus Loop Subdivision Level 5</figcaption>
+	</td>
+</tr>
+</table>
+</div>
+<br>
+
+<p>
+After each loop subdivision, the meshes get smoother, the corners get rounded out and the object becomes a bit smaller as a result. 
+If we do more edge splits on the meshes, the result after subdivision will be smoother with more faces but also leads to smaller creases if the new triangles after edge splits are uneven. 
+Below are screenshots of some examples showing that a cube split into symmetric meshes leads to a smoother mesh with less crease while edge splits heavily at corner leads to a lot of small crease around the corner. 
+</p>
+<br>
+
+<br>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-cube-prep0.jpg" align="middle" width="300px"/>
+	<figcaption>Quadball Loop Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-prep1.jpg" align="middle" width="300px"/>
+	<figcaption>Quadball Loop Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-prep2.jpg" align="middle" width="300px"/>
+	<figcaption>Quadball Loop Subdivision Level 2</figcaption>
+	</td>
+</tr>
+<br>
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-cube-corner0.jpg" align="middle" width="300px"/>
+	<figcaption>Torus Loop Subdivision Level 3</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-corner1.jpg" align="middle" width="300px"/>
+	<figcaption>Torus Loop Subdivision Level 4</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-corner2.jpg" align="middle" width="300px"/>
+	<figcaption>Torus Loop Subdivision Level 5</figcaption>
+	</td>
+</tr>
+</table>
+</div>
+<br>
+
+
+<!--Load dae/cube.dae. Perform several iterations of loop subdivision on the cube. Notice that the cube becomes slightly asymmetric after repeated subdivisions. Can you pre-process the cube with edge flips and splits so that the cube subdivides symmetrically? Document these effects and explain why they occur. Also explain how your pre-processing helps alleviate the effects.-->
+<h4>Loop Subdivision of a Cube</h4>
+
+<p>
+We can observe that the cube becomes slightly asymmetric after repeated subdivisions. 
+The reason is that the mesh is not symmetric initially. 
+For pre-processing, we can use edge flips and splits to make the cube mesh symmetric initially. (i.e. $4$ right-angled triangle in each of the $6$ faces of the cube. )
+All the topological	and geometric operations will not break this symmetric property of the cube mesh. 
+Then, the cube can be subdivided symmetrically. 
+Screenshots of original mesh, pre-processed mesh and their subdivisions are shown below. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-cube-orig0.jpg" align="middle" width="300px"/>
+	<figcaption>Original Cube Loop Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-orig1.jpg" align="middle" width="300px"/>
+	<figcaption>Original Cube Loop Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-orig2.jpg" align="middle" width="300px"/>
+	<figcaption>Original Cube Loop Subdivision Level 2</figcaption>
+	</td>
+</tr>
+<br>
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-cube-orig3.jpg" align="middle" width="300px"/>
+	<figcaption>Original Cube Loop Subdivision Level 3</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-orig4.jpg" align="middle" width="300px"/>
+	<figcaption>Original Cube Loop Subdivision Level 4</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-orig5.jpg" align="middle" width="300px"/>
+	<figcaption>Original Cube Loop Subdivision Level 5</figcaption>
+	</td>
+</tr>
+<br>
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-cube-prep0.jpg" align="middle" width="300px"/>
+	<figcaption>Pre-processed Cube Loop Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-prep1.jpg" align="middle" width="300px"/>
+	<figcaption>Pre-processed Cube Loop Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-prep2.jpg" align="middle" width="300px"/>
+	<figcaption>Pre-processed Cube Loop Subdivision Level 2</figcaption>
+	</td>
+</tr>
+<br>
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-cube-prep3.jpg" align="middle" width="300px"/>
+	<figcaption>Pre-processed Cube Loop Subdivision Level 3</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-prep4.jpg" align="middle" width="300px"/>
+	<figcaption>Pre-processed Cube Loop Subdivision Level 4</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-cube-prep5.jpg" align="middle" width="300px"/>
+	<figcaption>Pre-processed Cube Loop Subdivision Level 5</figcaption>
+	</td>
+</tr>
+</table>
+</div>
+<br>
+		
+<!--If you have implemented any extra credit extensions, explain what you did and document how they work with screenshots.-->
+<h4>Extra Credit I: Loop Subdivision with Boundary</h4>
+<p>
+I have implemented support for boundary edges in Loop subdivision. 
+In Part 5 Extra Credit, I have implemented support for boundary in edge split operations. 
+Namely, I have implemented support for topological operations (for edge flip operation, boundary edge cannot be flipped). 
+From the provided materials, I find that Loop subdivision deal with boundary as crease in geometric operations. 
+For even boundary vertices (old vertices on the boundary), the new position use the formula with $u=\frac 1 8$ and only count the neighbor boundary vertices as its neighbor in the formula. 
+Namely, the formula is $v' = \frac 3 4 v + \frac 1 8 v_1+\frac 1 8 v_2$ where $v_1,v_2$ are neighbor vertices on the boundary. 
+For odd boundary vertices (new midpoints added on the boundary edges), the new position is the average of two vertices of the boundary edge, i.e. $v=\frac{v_1+v_2}{2}$ where $v_1,v_2$ are the vertices on the boundary edge. 
+Below is the screenshots to show how the extra credit works. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-extra10.jpg" align="middle" width="300px"/>
+	<figcaption>Beetle (Boundary) Loop Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-extra11.jpg" align="middle" width="300px"/>
+	<figcaption>Beetle (Boundary) Loop Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-extra12.jpg" align="middle" width="300px"/>
+	<figcaption>Beetle (Boundary) Loop Subdivision Level 2</figcaption>
+	</td>
+</tr>
+</table>
+</div>
+<br>
+	
+<h4>Extra Credit II-1: Modified Butterfly Subdivision</h4>
+<p>
+I have implemented Modified Butterfly subdivision (an interpolating subdivision algorithm). 
+You can press <code>u</code> or <code>U</code> to apply modified Butterfly subdivision to the mesh in the GUI. 
+In Modified Butterfly subdivision, we use topological operations similar with what we do in $1-4$ Loop subdivision. 
+But the geometric operations are much different. First, the old vertices will be placed at the original position without a new position. 
+Second, for each new vertex (odd vertex) inserted in each edge, we calculate its new position differently depending on the degrees of the two even vertices on the edge. 
+If both two vertices have degree $6$, we can use Butterfly subdivision, i.e. the new position is the weighted-average of $10$ "nearest" vertices' positions (shown in the figure below left). 
+The weight of vertices are $a=\frac 1 2 -w, b=\frac 1 8+2w, c=-1/16-w, d=w$ where $w$ is a small value and we use $w=0$ in our implementation. 
+If one of the vertices $v$ has a degree not equal to $6$, we need to use another method (shown in the figure below right). 
+The method is applied to the vertex $v$, the result is a weighted average of all the neighbor vertices of $v$ (including $v$ itself). 
+The weight of $v$ is $\frac 3 4$, and the weights are $\frac 1 n (\frac 1 4 + \cos(\frac{2\pi i}{n})+\frac 1 2 \cos(\frac{4\pi i}{n}))$ for the $i$-th neighbor vertex among the $n$ neighbors ($0$-th neighbor $v_0$ is the other vertex on the edge). 
+Particularly, weights are $[\frac 5 {12}, -\frac{1}{12}, -\frac{1}{12}]$ if $n=3$, and $[\frac 3 8, 0, -\frac 1 8, 0]$ if $n=4$. 
+If both vertices have a degree not equal to $6$, we use the average of the their results using the method above. 
+</p>
+<div align="middle">
+	<table style="width:100%">
+	<tr align="center">
+		<td>
+		<img src="images/hw2-task6-mb-algo1.jpg" align="middle" width="400px"/>
+		<figcaption>Edges with Vertices Degree $6$</figcaption>
+		</td>
+		<td>
+		<img src="images/hw2-task6-mb-algo2.jpg" align="middle" width="400px"/>
+		<figcaption>Edges with Vertices Degree not $6$</figcaption>
+		</td>
+	</tr>
+</table>
+</div>
+<br>
+<p>
+Below is the screenshots to show how the extra credit works. 
+The first three screenshots shows that the subdivision works well for complex meshes with boundary. 
+The last three screenshots show that how Butterfly subdivision works since most of vertices have a degree of $6$. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-extra20.jpg" align="middle" width="300px"/>
+	<figcaption>Maxplanck (Boundary) Modified Butterfly Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-extra21.jpg" align="middle" width="300px"/>
+	<figcaption>Maxplanck (Boundary) Modified Butterfly Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-extra22.jpg" align="middle" width="300px"/>
+	<figcaption>Maxplanck (Boundary) Modified Butterfly Subdivision Level 2</figcaption>
+	</td>
+</tr>
+<br>
+<tr>
+	<td>
+		<img src="images/hw2-task6-extra23.jpg" align="middle" width="300px"/>
+		<figcaption>Bean (degree $6$) Modified Butterfly Subdivision Level 0</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task6-extra24.jpg" align="middle" width="300px"/>
+		<figcaption>Bean (degree $6$) Modified Butterfly Subdivision Level 1</figcaption>
+	</td>
+	<td>
+		<img src="images/hw2-task6-extra25.jpg" align="middle" width="300px"/>
+		<figcaption>Bean (degree $6$) Modified Butterfly Subdivision Level 2</figcaption>
+	</td>
+</tr>
+</table>
+</div>
+<br>
+<h4>Extra Credit II-2: $\sqrt 3$ Subdivision</h4>
+<p>
+I have implemented $\sqrt 3$ subdivision (an approximation subdivision algorithm). 
+You can press <code>r</code> or <code>R</code> to apply $\sqrt 3$ subdivision to the mesh in the GUI. 
+In $\sqrt 3$ subdivision, we use topological operations different from what we do in $1-4$ Loop subdivision. 
+We first find the center of each triangle face, then insert the three edges between the new vertex and the three vertices on the triangle respectively. 
+After that, we will flip all the old edges which are not on the boundary. 
+If all the vertices have degree $6$, we will find that the meshes seems to be rotated by 30 degrees after one subdivision. 
+The topological operation which split one triangle face into $3$ smaller triangles cannot be implemented through invoking edge splits and edge flips. 
+So we implement the triangle split operation for each triangle face in the subdivision and then invoke edge flip operations on all the old edges. 
+</p>
+<br>
+<div align="middle">
+	<img src="images/hw2-task6-sqrt3-algo1.jpg" align="middle" width="50%">
+	<figcaption>Sqrt 3 Subdivision</figcaption>
+</div>
+<br>
+<p>
+Below is the screenshots to show how the extra credit works. 
+The first three screenshots shows that the subdivision works well for complex meshes. 
+The last three screenshots show that how $\sqrt 3$ subdivision works since most of vertices have a degree of $6$. 
+We can find that the meshes seems to be rotated by 30 degrees after a $\sqrt 3$ subdivision when degrees of vertices are $6$, which is a feature of $\sqrt 3$ subdivision. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+	<td>
+	<img src="images/hw2-task6-extra30.jpg" align="middle" width="300px"/>
+	<figcaption>Cow $\sqrt 3$ Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-extra31.jpg" align="middle" width="300px"/>
+	<figcaption>Cow $\sqrt 3$ Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-extra32.jpg" align="middle" width="300px"/>
+	<figcaption>Cow $\sqrt 3$ Subdivision Level 2</figcaption>
+	</td>
+</tr>
+<br>
+<tr>
+	<td>
+	<img src="images/hw2-task6-extra33.jpg" align="middle" width="300px"/>
+	<figcaption>Teapot (degree $6$) $\sqrt 3$ Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-extra34.jpg" align="middle" width="300px"/>
+	<figcaption>Teapot (degree $6$) $\sqrt 3$ Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task6-extra35.jpg" align="middle" width="300px"/>
+	<figcaption>Teapot (degree $6$) $\sqrt 3$ Subdivision Level 2</figcaption>
+	</td>
+</tr>
+</table>
+</div>
+<br>
+	
+<h3 align="middle">Part 7 (Optional, Possible Extra Credit)</h3>
+<p> I'm now still working to get a better result. </p>
+<!--
+<b>Save your best polygon mesh as partsevenmodel.dae in your docs folder and show us a screenshot of the mesh in your write-up.
+</b>
+<p>YOUR RESPONSE GOES HERE</p>
+<br>
+<b>Include a series of screenshots showing your original mesh and your mesh after one and two rounds of subdivision. If you have used custom shaders, include screenshots of your mesh with those shaders applied as well.
+</b>
+<p>YOUR RESPONSE GOES HERE</p>
+<br>
+<b>Describe what you have done to enhance your mesh beyond the simple humanoid mesh described in the tutorial.
+</b>
+<p>YOUR RESPONSE GOES HERE</p>
+<br>
+-->
+<p>
+<b>Mesh Display</b><br>
+Below shows the screenshot of my humanoid mesh. 
+</p>
+<br>
+<div align="middle">
+	<table style="width:100%">
+	<tr align="center">
+		<td>
+		<img src="images/hw2-task7-extra.jpg" align="middle" width="400px"/>
+		<figcaption>Original Humanoid Mesh in Blender</figcaption>
+		</td>
+		<td>
+		<img src="images/hw2-task7-extra0.jpg" align="middle" width="400px"/>
+		<figcaption>Original Humanoid Mesh in GUI</figcaption>
+		</td>
+	</tr>
+	</table>
+	</div>
+	<br>
+	
+<p>
+<b>Mesh Subdivision</b><br>
+Below shows the screenshot of my humanoid mesh after one and two rounds of subdivision. 
+</p>
+<br>
+<div align="middle">
+<table style="width:100%">
+<tr align="center">
+	<td>
+	<img src="images/hw2-task7-extra0.jpg" align="middle" width="300px"/>
+	<figcaption>Humanoid Loop Subdivision Level 0</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task7-extra1.jpg" align="middle" width="300px"/>
+	<figcaption>Humanoid Loop Subdivision Level 1</figcaption>
+	</td>
+	<td>
+	<img src="images/hw2-task7-extra2.jpg" align="middle" width="300px"/>
+	<figcaption>Humanoid Loop Subdivision Level 2</figcaption>
+	</td>
+</tr>
+</table>
+</div>
+<br>
+	
+<p>
+<b>Mesh Enhancement</b><br>
+In blender software, I construct my humanoid mesh with more faces by subdivision and update the position of new vertices to fit position. 
+</p>
+
+</body>
 </html>
